@@ -1,0 +1,49 @@
+name: 🔵 UBG Compiler Pipeline
+
+on:
+  schedule:
+    # Uruchom codziennie o 3:00 UTC w nocy
+    - cron: '0 3 * * *'
+  workflow_dispatch: # Możliwość ręcznego odpalenia w interfejsie GH Actions
+  push:
+    paths:
+      - 'profiles/**'
+      - 'catalog.yaml'
+      - '.github/workflows/**'
+
+permissions:
+  contents: write
+
+jobs:
+  compile-blocklists:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Zaciągnij Repozytorium ⚓
+        uses: actions/checkout@v4
+
+      - name: Skonfiguruj Node.js (V8 Engine) ⚙️
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Zainstaluj Zależności 📦
+        run: npm ci
+
+      - name: Uruchom Silnik Kompilacji (Mono Blue) 🚀
+        run: npm run start
+
+      - name: Przenieś skompilowane pliki (Deploy) 📤
+        run: |
+          mkdir -p public/
+          cp -r dist_out/* public/
+
+      - name: Commit i Push Wyników na gałąź 'release' 🌐
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: release
+          commit_message: "🚀 Auto-kompilacja Blocklist Czas: ${{ github.event.repository.updated_at }}"
+          force_orphan: true

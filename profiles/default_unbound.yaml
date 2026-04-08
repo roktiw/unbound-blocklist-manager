@@ -1,0 +1,15 @@
+# Profil kompilacji użytkownika
+name: "Polska Baza Unbound (MVP)"
+outputFormat: "unbound" # lub "pihole"
+
+activeSourceIds:
+  # Podstawowy zestaw globalny i polski
+  - stevenblack_hosts
+  - kadhosts
+  - cert_pl_hole
+
+activeExceptionGroupIds:
+  # Ochrona działania urządzeń w domu i lokalnych portali
+  - whitelist_apple_telemetry
+  - whitelist_microsoft_telemetry
+  - whitelist_polish_portals

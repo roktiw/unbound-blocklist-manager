@@ -1,0 +1,21 @@
+{
+  "name": "korab-filters-web",
+  "version": "1.0.0",
+  "description": "Unbound Blocklist Generator Compiler MVP",
+  "main": "dist/pipeline.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx src/cli.ts"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "js-yaml": "^4.1.0",
+    "zod": "^3.23.4"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.12.7",
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.5"
+  }
+}

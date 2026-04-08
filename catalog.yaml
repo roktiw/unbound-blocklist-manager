@@ -1,0 +1,109 @@
+# UBG Universal Blocklist Catalog
+# Źródło prawdy dla platformy: Źródła, Warianty, i Wyjątki
+
+categories:
+  - id: ads
+    name: "Reklamy i Tracking"
+  - id: malware
+    name: "Złośliwe oprogramowanie (Malware, Phishing)"
+  - id: scam
+    name: "Oszustwa i Scam"
+  - id: privacy
+    name: "Prywatność i Telemetria"
+
+sources:
+  # 🟢 GLOBAL TIER 1
+  - id: oisd_big
+    name: "OISD Big"
+    url: "https://big.oisd.nl/domainswild"
+    format: "domains_wildcard"
+    category: ["ads", "malware"]
+    region: "global"
+    description: "Standard de facto. Agregator minimalizujący FP. Brak warezu/pornografii."
+    recommended: true
+
+  - id: stevenblack_hosts
+    name: "StevenBlack Hosts"
+    url: "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+    format: "hosts"
+    category: ["ads"]
+    region: "global"
+    description: "Stabilny klasyk, często stosowany z Pi-hole."
+    recommended: true
+
+  - id: hagezi_pro
+    name: "HaGeZi Pro"
+    url: "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/pro.txt"
+    format: "adblock"
+    category: ["ads", "privacy", "malware"]
+    region: "global"
+    description: "Szerokie pokrycie, w tym telemetria i unikanie detekcji VPN."
+    recommended: false
+
+  # 🟢 SECURITY MUST-HAVE
+  - id: abuse_urlhaus
+    name: "abuse.ch URLhaus"
+    url: "https://urlhaus.abuse.ch/downloads/hostfile/"
+    format: "hosts"
+    category: ["malware"]
+    region: "global"
+    description: "Złośliwe adresy URL, malware, botnety. Codzienne aktualizacje."
+    recommended: true
+
+  # 🇵🇱 REGIONAL: POLAND
+  - id: cert_pl_hole
+    name: "CERT Polska Hole"
+    url: "https://hole.cert.pl/domains/v2/domains.txt"
+    format: "domains_plain"
+    category: ["malware", "scam"]
+    region: "pl"
+    description: "Rządowa lista złośliwych witryn PL. Konieczność absolutna."
+    recommended: true
+
+  - id: majkiit_ads
+    name: "MajkiIT Polish Ads Filter"
+    url: "https://raw.githubusercontent.com/MajkiIT/polish-ads-filter/master/polish-pihole-filters/adservers.txt"
+    format: "hosts"
+    category: ["ads"]
+    region: "pl"
+    description: "Przeciw reklamom i skryptom śledzącym na polskich portalach (Onet, WP, itp.)."
+    recommended: true
+
+  - id: kadhosts
+    name: "KADhosts (FiltersHeroes)"
+    url: "https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt"
+    format: "hosts"
+    category: ["scam", "ads"]
+    region: "pl"
+    description: "Polska lista skupiona na oszustwach, naciągaczach internetowych."
+    recommended: true
+
+# 🛡️ SYSTEM WYJĄTKÓW (EXCEPTIONS / WHITELISTS)
+# Użytkownik w Firebase decyduje, co chce dopuścić, nawet jeśli listy to zablokują
+exceptions_groups:
+  - id: whitelist_apple_telemetry
+    name: "Zezwalaj na telemetrię Apple"
+    description: "Jeśli systemy smart-home, iCloud lub urządzenia Apple sprawiają problemy, zezwól na ich ruch analityczny."
+    domains:
+      - "metrics.apple.com"
+      - "securemetrics.apple.com"
+      - "supportmetrics.apple.com"
+      - "smp-device-content.apple.com"
+
+  - id: whitelist_microsoft_telemetry
+    name: "Zezwalaj na telemetrię Microsoft"
+    description: "Krytyczne dla bezproblemowych aktualizacji Windows i Xbox Live."
+    domains:
+      - "vortex.data.microsoft.com"
+      - "telemetry.microsoft.com"
+      - "settings-win.data.microsoft.com"
+      - "watson.telemetry.microsoft.com"
+
+  - id: whitelist_polish_portals
+    name: "Zezwalaj na domeny Polskich Portali"
+    description: "Zabezpieczenie przed uszkodzeniem interfejsu (False Positive) WP, Onet, Gazeta."
+    domains:
+      - "wp.pl"
+      - "onet.pl"
+      - "gazeta.pl"
+      - "interia.pl"
