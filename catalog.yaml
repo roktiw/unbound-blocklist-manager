@@ -1,15 +1,15 @@
 # UBG Universal Blocklist Catalog
-# Źródło prawdy dla platformy: Źródła, Warianty, i Wyjątki
+# Single source of truth: Sources, Formats, and Exceptions
 
 categories:
   - id: ads
-    name: "Reklamy i Tracking"
+    name: "Ads & Tracking"
   - id: malware
-    name: "Złośliwe oprogramowanie (Malware, Phishing)"
+    name: "Malicious Software (Malware, Phishing)"
   - id: scam
-    name: "Oszustwa i Scam"
+    name: "Scams & Fraud"
   - id: privacy
-    name: "Prywatność i Telemetria"
+    name: "Privacy & Telemetry"
 
 sources:
   # 🟢 GLOBAL TIER 1
@@ -19,7 +19,7 @@ sources:
     format: "domains_wildcard"
     category: ["ads", "malware"]
     region: "global"
-    description: "Standard de facto. Agregator minimalizujący FP. Brak warezu/pornografii."
+    description: "De facto standard. Aggregator minimizing FP. Excludes warez/porn."
     recommended: true
 
   - id: stevenblack_hosts
@@ -28,7 +28,7 @@ sources:
     format: "hosts"
     category: ["ads"]
     region: "global"
-    description: "Stabilny klasyk, często stosowany z Pi-hole."
+    description: "Stable classic, commonly used with Pi-hole."
     recommended: true
 
   - id: hagezi_pro
@@ -37,8 +37,26 @@ sources:
     format: "adblock"
     category: ["ads", "privacy", "malware"]
     region: "global"
-    description: "Szerokie pokrycie, w tym telemetria i unikanie detekcji VPN."
+    description: "Broad coverage including telemetry and VPN-detection evasion."
     recommended: false
+    
+  - id: easylist
+    name: "EasyList"
+    url: "https://easylist.to/easylist/easylist.txt"
+    format: "adblock"
+    category: ["ads"]
+    region: "global"
+    description: "Industry-standard ad filter. Very aggressive footprint."
+    recommended: false
+
+  - id: easyprivacy
+    name: "EasyPrivacy"
+    url: "https://easylist.to/easylist/easyprivacy.txt"
+    format: "adblock"
+    category: ["privacy"]
+    region: "global"
+    description: "Primary filter for analytic and tracking domains."
+    recommended: true
 
   # 🟢 SECURITY MUST-HAVE
   - id: abuse_urlhaus
@@ -47,7 +65,7 @@ sources:
     format: "hosts"
     category: ["malware"]
     region: "global"
-    description: "Złośliwe adresy URL, malware, botnety. Codzienne aktualizacje."
+    description: "Malicious URLs, malware, botnets. Daily updates."
     recommended: true
 
   # 🇵🇱 REGIONAL: POLAND
@@ -57,7 +75,7 @@ sources:
     format: "domains_plain"
     category: ["malware", "scam"]
     region: "pl"
-    description: "Rządowa lista złośliwych witryn PL. Konieczność absolutna."
+    description: "Government-maintained list of malicious sites in PL. Absolute necessity."
     recommended: true
 
   - id: majkiit_ads
@@ -66,7 +84,7 @@ sources:
     format: "hosts"
     category: ["ads"]
     region: "pl"
-    description: "Przeciw reklamom i skryptom śledzącym na polskich portalach (Onet, WP, itp.)."
+    description: "Counters ads and tracking scripts on Polish portals (Onet, WP, etc.)."
     recommended: true
 
   - id: kadhosts
@@ -75,15 +93,15 @@ sources:
     format: "hosts"
     category: ["scam", "ads"]
     region: "pl"
-    description: "Polska lista skupiona na oszustwach, naciągaczach internetowych."
+    description: "Polish list focused on scams and internet fraudsters."
     recommended: true
 
-# 🛡️ SYSTEM WYJĄTKÓW (EXCEPTIONS / WHITELISTS)
-# Użytkownik w Firebase decyduje, co chce dopuścić, nawet jeśli listy to zablokują
+# 🛡️ EXCEPTIONS (WHITELISTS)
+# Users define overrides ensuring core functionality is preserved.
 exceptions_groups:
   - id: whitelist_apple_telemetry
-    name: "Zezwalaj na telemetrię Apple"
-    description: "Jeśli systemy smart-home, iCloud lub urządzenia Apple sprawiają problemy, zezwól na ich ruch analityczny."
+    name: "Allow Apple Telemetry"
+    description: "Prevents smart-home, iCloud, or Apple device connectivity issues."
     domains:
       - "metrics.apple.com"
       - "securemetrics.apple.com"
@@ -91,8 +109,8 @@ exceptions_groups:
       - "smp-device-content.apple.com"
 
   - id: whitelist_microsoft_telemetry
-    name: "Zezwalaj na telemetrię Microsoft"
-    description: "Krytyczne dla bezproblemowych aktualizacji Windows i Xbox Live."
+    name: "Allow Microsoft Telemetry"
+    description: "Critical for seamless Windows Update and Xbox Live functionality."
     domains:
       - "vortex.data.microsoft.com"
       - "telemetry.microsoft.com"
@@ -100,8 +118,8 @@ exceptions_groups:
       - "watson.telemetry.microsoft.com"
 
   - id: whitelist_polish_portals
-    name: "Zezwalaj na domeny Polskich Portali"
-    description: "Zabezpieczenie przed uszkodzeniem interfejsu (False Positive) WP, Onet, Gazeta."
+    name: "Allow Polish Portal Domains"
+    description: "Protection against breaking layouts (False Positives) on WP, Onet, Gazeta."
     domains:
       - "wp.pl"
       - "onet.pl"

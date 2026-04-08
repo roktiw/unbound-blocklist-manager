@@ -22,12 +22,12 @@ async function main() {
   const files = fs.readdirSync(profilesDir).filter(f => f.endsWith('.yaml') || f.endsWith('.yml'));
   
   if (files.length === 0) {
-    console.log("❌ Nie znaleziono żadnych profili konfiguracyjnych w folderze profiles/");
+    console.log("❌ No configuration profiles found within the profiles/ directory.");
     process.exit(1);
   }
 
   for (const file of files) {
-    console.log(`\n\n--- 🚀 Kompilacja Profilu: ${file} ---`);
+    console.log(`\n\n--- 🚀 Compiling Profile: ${file} ---`);
     const profilePath = path.join(profilesDir, file);
     const profileContent = fs.readFileSync(profilePath, "utf8");
     const rawConfig = yaml.load(profileContent) as CompileConfig & { name?: string };
@@ -46,9 +46,9 @@ async function main() {
       fs.writeFileSync(outputPath, outputString);
       
       const end = Date.now();
-      console.log(`\n✅ Profil [${rawConfig.name || file}] zapisany do: ${outputPath} w ${((end - start)/1000).toFixed(2)}s\n`);
+      console.log(`\n✅ Profile [${rawConfig.name || file}] successfully built to: ${outputPath} in ${((end - start)/1000).toFixed(2)}s\n`);
     } catch (e: any) {
-        console.error(`❌ Błąd podczas kompilacji profilu ${file}: ${e.message}`);
+        console.error(`❌ Fatal error during compilation of profile ${file}: ${e.message}`);
     }
   }
 }

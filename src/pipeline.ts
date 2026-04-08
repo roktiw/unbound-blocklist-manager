@@ -1,33 +1,34 @@
-import axios from "axios";
 import fs from "fs";
 import { loadCatalog } from "./catalog";
 import { CompileConfig, Catalog } from "./models";
 import { parseLine } from "./parsers";
+import { IngestFetcher } from "./fetcher";
 
 export class CompilerPipeline {
   private catalog: Catalog;
+  private fetcher: IngestFetcher;
 
   constructor(catalogPath: string) {
     this.catalog = loadCatalog(catalogPath);
+    this.fetcher = new IngestFetcher();
   }
 
   async compile(config: CompileConfig): Promise<string> {
     const finalSet = new Set<string>();
 
-    console.log("🚀 Rozpoczynam kompilację...");
+    console.log("🚀 Starting compilation process...");
     
-    // 1. Fetch and Parse Sources
+    // 1. Fetch and Parse Sources using smart caching engine
     for (const sourceId of config.activeSourceIds) {
       const source = this.catalog.sources.find(s => s.id === sourceId);
       if (!source) {
-        console.warn(`[WARN] Zródło ${sourceId} nie znalezione w katalogu.`);
+        console.warn(`[WARN] Source ${sourceId} not found in catalog.`);
         continue;
       }
 
-      console.log(`📡 Pobieranie ${source.name} [${source.format}] z ${source.url}...`);
       try {
-        const response = await axios.get(source.url, { responseType: 'text' });
-        const lines = response.data.split('\n');
+        const rawData = await this.fetcher.fetchSource(source);
+        const lines = rawData.split('\n');
         
         let count = 0;
         for (const line of lines) {
@@ -37,14 +38,14 @@ export class CompilerPipeline {
              count++;
            }
         }
-        console.log(`✅ ${source.name}: Zmapowano ${count} domen.`);
+        console.log(`✅ ${source.name}: Extracted and mapped ${count} valid domains.`);
       } catch (err: any) {
-        console.error(`❌ Błąd pobierania ${source.name}: ${err.message}`);
+        console.error(`❌ Failed to process ${source.name}: ${err.message}`);
       }
     }
 
     // 2. Apply Whitelists / Exceptions
-    console.log(`\n🛡️ Stosowanie wyjątków (Whitelisting)...`);
+    console.log(`\n🛡️ Applying exceptions and whitelists...`);
     for (const groupId of config.activeExceptionGroupIds) {
       const group = this.catalog.exceptions_groups.find(g => g.id === groupId);
       if (group) {
@@ -53,14 +54,14 @@ export class CompilerPipeline {
             finalSet.delete(domain);
           }
         }
-        console.log(`✅ Wyjątek zaaplikowany: ${group.name} (${group.domains.length} reguł)`);
+        console.log(`✅ Exception group applied: ${group.name} (${group.domains.length} override rules)`);
       }
     }
 
-    console.log(`\n🎉 Finalna wielkość ujednoliconego Setu: ${finalSet.size} unikalnych domen.`);
+    console.log(`\n🎉 Final unified set size: ${finalSet.size} unique domains.`);
 
-    // 3. Render Output
-    console.log(`\n⚙️ Generowanie docelowego formatu: ${config.outputFormat}...`);
+    // 3. Render Output format
+    console.log(`\n⚙️ Generating output format: ${config.outputFormat}...`);
     let output = "";
 
     if (config.outputFormat === "unbound") {
@@ -77,5 +78,3 @@ export class CompilerPipeline {
     return output;
   }
 }
-
-

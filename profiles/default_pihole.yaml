@@ -1,0 +1,15 @@
+# User Compilation Profile
+name: "Standard Pi-Hole Defense"
+outputFormat: "pihole"
+
+activeSourceIds:
+  # Broad Pi-hole compatible standard lists
+  - oisd_big
+  - stevenblack_hosts
+  - cert_pl_hole
+  - majkiit_ads
+
+activeExceptionGroupIds:
+  # Device operation safeguards
+  - whitelist_apple_telemetry
+  - whitelist_microsoft_telemetry
